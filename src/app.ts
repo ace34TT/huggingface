@@ -11,13 +11,18 @@ app.use(bodyParser.json());
 // !
 app.post("/generate-image", async (req: Request, res: Response) => {
   const [prompt] = [req.body.prompt];
+  console.log(prompt);
+  console.log("making request ");
   const result = await hf.textToImage({
     model: "stabilityai/stable-diffusion-2",
     inputs: prompt,
     parameters: {
       negative_prompt: "blurry",
+      height: 1024,
+      width: 1024,
     },
   });
+  console.log("uploading data");
   const imageBuffer = Buffer.from(await result.arrayBuffer());
   const filename = await saveFile(imageBuffer);
   const url = await uploadFileToFirebase(filename!);
