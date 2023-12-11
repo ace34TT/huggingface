@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import util from "util";
+import { uploadFileToFirebase } from "../services/firebase.services";
 
 const assetsDirectory = path.resolve(__dirname, "../assets/");
 const tempDirectory = path.resolve(__dirname, "../tmp/");
@@ -41,4 +42,12 @@ export const tmpFolderGuard = () => {
 export const deleteFile = async (filename: string) => {
   console.log("deleting : " + path.resolve(tempDirectory, filename));
   fs.unlinkSync(path.resolve(tempDirectory, filename));
+};
+export const uploadFile = async (result: any): Promise<any> => {
+  const imageBuffer = Buffer.from(await result.arrayBuffer());
+  const filename = await saveFile(imageBuffer);
+  const url = await uploadFileToFirebase(filename!);
+  console.log(url);
+  deleteFile(filename!);
+  return url;
 };
